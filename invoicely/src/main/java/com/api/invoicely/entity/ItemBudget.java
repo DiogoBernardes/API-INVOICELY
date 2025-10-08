@@ -3,6 +3,7 @@ package com.api.invoicely.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "item_budget")
@@ -14,8 +15,8 @@ import java.time.LocalDateTime;
 public class ItemBudget {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(generator = "UUID")
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "company_id", nullable = false)
