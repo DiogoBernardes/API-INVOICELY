@@ -42,4 +42,15 @@ public class Company {
     @OneToOne
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
+
+    @PrePersist
+    public void prePersist() {
+        insertedAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }
