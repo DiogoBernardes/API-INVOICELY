@@ -6,32 +6,27 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "comercial_item")
+@Table(name = "payment_method")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ComercialItem {
+public class PaymentMethod {
 
     @Id
-    @GeneratedValue(generator = "UUID")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String name;
-    @Column(nullable = false)
-    private String description;
-    @Column(nullable = false)
-    private Double price;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ItemType type;
+    @Column(length = 255)
+    private String description;
 
     private LocalDateTime insertedAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();
@@ -46,9 +41,5 @@ public class ComercialItem {
     @PreUpdate
     public void preUpdate() {
         updatedAt = LocalDateTime.now();
-    }
-
-    public enum ItemType {
-        PRODUTO, SERVICO
     }
 }

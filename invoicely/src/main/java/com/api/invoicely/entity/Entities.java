@@ -36,11 +36,22 @@ public class Entities {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private EntityType type; // CLIENTE | FORNECEDOR
+    private EntityType type;
 
     private LocalDateTime insertedAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();
     private LocalDateTime removedAt;
+
+    @PrePersist
+    public void prePersist() {
+        insertedAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
     public enum EntityType {
         CLIENTE, FORNECEDOR
