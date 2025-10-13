@@ -2,7 +2,9 @@ package com.api.invoicely.mapper;
 
 import com.api.invoicely.dto.user.OwnerDTO;
 import com.api.invoicely.entity.User;
+import org.springframework.stereotype.Component;
 
+@Component
 public class OwnerMapper {
     public static OwnerDTO toOwnerDTO(User owner) {
         return OwnerDTO.builder()

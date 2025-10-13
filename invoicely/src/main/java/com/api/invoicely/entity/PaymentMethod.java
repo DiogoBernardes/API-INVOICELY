@@ -18,10 +18,6 @@ public class PaymentMethod {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "company_id", nullable = false)
-    private Company company;
-
     @Column(nullable = false, length = 100)
     private String name;
 
