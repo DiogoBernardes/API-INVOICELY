@@ -35,7 +35,7 @@ public class ExpensesService {
         PaymentMethod paymentMethod = paymentMethodRepository.findActiveById(dto.getPaymentMethodId())
                 .orElseThrow(() -> new ApiException("Método de pagamento não encontrado", HttpStatus.NOT_FOUND));
 
-        Category category = categoryRepository.findActiveByIdAAndCompanyId(dto.getCategoryId(), owner.getCompany().getId())
+        Category category = categoryRepository.findActiveByIdAndCompanyId(dto.getCategoryId(), owner.getCompany().getId())
                 .orElseThrow(() -> new ApiException("Categoria não encontrada", HttpStatus.NOT_FOUND));
 
         Expenses expense = Expenses.builder()
@@ -84,7 +84,7 @@ public class ExpensesService {
             expense.setPaymentMethod(paymentMethod);
         }
         if (dto.getCategoryId() != null) {
-            Category category = categoryRepository.findActiveByIdAAndCompanyId(dto.getCategoryId(), owner.getCompany().getId())
+            Category category = categoryRepository.findActiveByIdAndCompanyId(dto.getCategoryId(), owner.getCompany().getId())
                     .orElseThrow(() -> new ApiException("Categoria não encontrada", HttpStatus.NOT_FOUND));
             expense.setCategory(category);
         }
