@@ -92,6 +92,14 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- Cloudfare -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+            <version>2.20.24</version>
+        </dependency>
+
+
         <!-- Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
