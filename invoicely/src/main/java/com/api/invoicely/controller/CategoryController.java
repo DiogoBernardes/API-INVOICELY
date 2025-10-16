@@ -7,7 +7,6 @@ import com.api.invoicely.entity.User;
 import com.api.invoicely.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,26 +20,23 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping("/{categoryId}")
-    public ResponseEntity<CategoryResponseDTO> getCategoryById(@PathVariable UUID categoryId, Authentication authentication) {
-        User owner = (User) authentication.getPrincipal();
+    public ResponseEntity<CategoryResponseDTO> getCategoryById(@AuthenticationPrincipal User owner, @PathVariable UUID categoryId) {
         return ResponseEntity.ok(categoryService.getCategoryById(owner, categoryId));
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoryResponseDTO>> getAllCategories(Authentication authentication) {
-        User owner = (User) authentication.getPrincipal();
+    public ResponseEntity<List<CategoryResponseDTO>> getAllCategories(@AuthenticationPrincipal User owner) {
         return ResponseEntity.ok(categoryService.getAllCategories(owner));
     }
 
     @PostMapping("/create")
-    public ResponseEntity<CategoryResponseDTO> createCategory(@RequestBody CategoryCreateDTO dto, Authentication authentication) {
-        User owner = (User) authentication.getPrincipal();
+    public ResponseEntity<CategoryResponseDTO> createCategory(@AuthenticationPrincipal User owner, @RequestBody CategoryCreateDTO dto) {
         return ResponseEntity.ok(categoryService.createCategory(owner, dto));
     }
 
     @PutMapping("/update/{categoryId}")
-    public ResponseEntity<CategoryResponseDTO> updateCategory(@PathVariable UUID categoryId, @RequestBody CategoryUpdateDTO dto, Authentication authentication) {
-        User owner = (User) authentication.getPrincipal();
+    public ResponseEntity<CategoryResponseDTO> updateCategory(@AuthenticationPrincipal User owner, @PathVariable UUID categoryId,
+                                                              @RequestBody CategoryUpdateDTO dto) {
         return ResponseEntity.ok(categoryService.updateCategory(owner, categoryId, dto));
     }
 

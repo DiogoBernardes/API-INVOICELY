@@ -7,7 +7,7 @@ import com.api.invoicely.entity.User;
 import com.api.invoicely.service.CompanyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
@@ -20,22 +20,20 @@ public class CompanyController {
     private final CompanyService companyService;
 
     @GetMapping
-    public ResponseEntity<?> getCompany(Authentication authentication) {
-        User owner = (User) authentication.getPrincipal();
+    public ResponseEntity<?> getCompany(@AuthenticationPrincipal User owner) {
         CompanyResponseDTO dto = companyService.findCompanyByOwner(owner);
 
         return ResponseEntity.ok(Objects.requireNonNullElse(dto, "Nenhuma empresa encontrada. Complete o formulário para registar a sua empresa."));
     }
 
     @PostMapping("/create")
-    public ResponseEntity<CompanyResponseDTO> createCompany(@RequestBody CompanyCreateDTO dto, Authentication authentication) {
-        User owner = (User) authentication.getPrincipal();
+    public ResponseEntity<CompanyResponseDTO> createCompany(@AuthenticationPrincipal User owner, @RequestBody CompanyCreateDTO dto) {
         return ResponseEntity.ok(companyService.createCompany(owner, dto));
     }
 
     @PutMapping("/update/{companyId}")
-    public ResponseEntity<CompanyResponseDTO> updateCompany(@RequestBody CompanyUpdateDTO dto, Authentication authentication, @PathVariable String companyId) {
-        User owner = (User) authentication.getPrincipal();
+    public ResponseEntity<CompanyResponseDTO> updateCompany(@AuthenticationPrincipal User owner, @RequestBody CompanyUpdateDTO dto,
+                                                            @PathVariable String companyId) {
         return ResponseEntity.ok(companyService.updateCompany(owner, dto));
     }
 }

@@ -7,7 +7,7 @@ import com.api.invoicely.entity.User;
 import com.api.invoicely.service.ExpensesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,30 +21,23 @@ public class ExpensesController {
     private final ExpensesService expensesService;
 
     @GetMapping("/{expenseId}")
-    public ResponseEntity<ExpensesResponseDTO> getExpense(@PathVariable UUID expenseId, Authentication authentication) {
-
-        User owner = (User) authentication.getPrincipal();
+    public ResponseEntity<ExpensesResponseDTO> getExpense(@AuthenticationPrincipal User owner, @PathVariable UUID expenseId) {
         return ResponseEntity.ok(expensesService.getExpenseById(owner, expenseId));
     }
 
     @GetMapping
-    public ResponseEntity<List<ExpensesResponseDTO>> getAllExpenses(Authentication authentication) {
-        User owner = (User) authentication.getPrincipal();
+    public ResponseEntity<List<ExpensesResponseDTO>> getAllExpenses(@AuthenticationPrincipal User owner) {
         return ResponseEntity.ok(expensesService.getAllExpenses(owner));
     }
 
     @PostMapping(value = "/create", consumes = "multipart/form-data")
-    public ResponseEntity<ExpensesResponseDTO> createExpense(@ModelAttribute ExpensesCreateDTO dto, Authentication authentication){
-        User owner = (User) authentication.getPrincipal();
+    public ResponseEntity<ExpensesResponseDTO> createExpense(@AuthenticationPrincipal User owner, @RequestBody ExpensesCreateDTO dto){
         return ResponseEntity.ok(expensesService.createExpense(owner, dto));
     }
 
-
     @PutMapping("/update/{expenseId}")
-    public ResponseEntity<ExpensesResponseDTO> updateExpense(@PathVariable("expenseId") UUID expenseId, @RequestBody ExpensesUpdateDTO dto,
-                                                             Authentication authentication)  {
-
-        User owner = (User) authentication.getPrincipal();
+    public ResponseEntity<ExpensesResponseDTO> updateExpense(@AuthenticationPrincipal User owner, @PathVariable("expenseId") UUID expenseId,
+                                                             @RequestBody ExpensesUpdateDTO dto)  {
         return ResponseEntity.ok(expensesService.updateExpense(owner, expenseId, dto));
     }
 
