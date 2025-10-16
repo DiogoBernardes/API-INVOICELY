@@ -21,13 +21,13 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping("/{categoryId}")
-    public ResponseEntity<CategoryResponseDTO> getEntityById(@PathVariable UUID categoryId, Authentication authentication) {
+    public ResponseEntity<CategoryResponseDTO> getCategoryById(@PathVariable UUID categoryId, Authentication authentication) {
         User owner = (User) authentication.getPrincipal();
         return ResponseEntity.ok(categoryService.getCategoryById(owner, categoryId));
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoryResponseDTO>> getAllExpenses(Authentication authentication) {
+    public ResponseEntity<List<CategoryResponseDTO>> getAllCategories(Authentication authentication) {
         User owner = (User) authentication.getPrincipal();
         return ResponseEntity.ok(categoryService.getAllCategories(owner));
     }
@@ -39,13 +39,13 @@ public class CategoryController {
     }
 
     @PutMapping("/update/{categoryId}")
-    public ResponseEntity<CategoryResponseDTO> updateEntity(@PathVariable UUID categoryId, @RequestBody CategoryUpdateDTO dto, Authentication authentication) {
+    public ResponseEntity<CategoryResponseDTO> updateCategory(@PathVariable UUID categoryId, @RequestBody CategoryUpdateDTO dto, Authentication authentication) {
         User owner = (User) authentication.getPrincipal();
         return ResponseEntity.ok(categoryService.updateCategory(owner, categoryId, dto));
     }
 
     @DeleteMapping("/delete/{categoryId}")
-    public ResponseEntity<Void> deleteEntity(@AuthenticationPrincipal User user, @PathVariable UUID categoryId) {
+    public ResponseEntity<Void> deleteCategory(@AuthenticationPrincipal User user, @PathVariable UUID categoryId) {
         categoryService.deleteCategory(user, categoryId);
         return ResponseEntity.noContent().build();
     }

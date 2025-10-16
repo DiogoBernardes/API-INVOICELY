@@ -12,7 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ComercialItem {
+public class CommercialItem {
 
     @Id
     @GeneratedValue(generator = "UUID")

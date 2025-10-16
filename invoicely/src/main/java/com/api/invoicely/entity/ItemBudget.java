@@ -28,7 +28,7 @@ public class ItemBudget {
 
     @ManyToOne
     @JoinColumn(name = "item_id", nullable = false)
-    private ComercialItem item;
+    private CommercialItem item;
 
     @Column(nullable = false)
     private Double quantity;

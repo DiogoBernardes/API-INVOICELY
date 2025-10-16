@@ -42,7 +42,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/register").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/company/**", "/api/entities/**", "/api/expenses/**",
-                                "/api/category/**","/api/payment-methods/**")
+                                "/api/category/**","/api/payment-methods/**", "/api/commercial-items/**")
                         .authenticated()
                         .anyRequest().permitAll()
                 )
