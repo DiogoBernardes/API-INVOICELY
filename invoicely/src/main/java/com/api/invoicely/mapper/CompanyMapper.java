@@ -2,9 +2,11 @@ package com.api.invoicely.mapper;
 
 import com.api.invoicely.dto.company.CompanyResponseDTO;
 import com.api.invoicely.entity.Company;
+import org.springframework.stereotype.Component;
 
 import static com.api.invoicely.mapper.OwnerMapper.toOwnerDTO;
 
+@Component
 public class CompanyMapper {
 
     public static CompanyResponseDTO toCompanyDTO(Company company) {

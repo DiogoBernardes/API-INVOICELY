@@ -6,13 +6,13 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "item_budget")
+@Table(name = "category")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ItemBudget {
+public class Category {
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -22,20 +22,11 @@ public class ItemBudget {
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
-    @ManyToOne
-    @JoinColumn(name = "budget_id", nullable = false)
-    private Budget budget;
+    @Column(nullable = false, unique = false, length = 100)
+    private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "item_id", nullable = false)
-    private CommercialItem item;
-
-    @Column(nullable = false)
-    private Double quantity;
-    @Column(nullable = false)
-    private Double unitPrice;
-    @Column(nullable = false)
-    private Double iva;
+    @Column(length = 255)
+    private String description;
 
     private LocalDateTime insertedAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();

@@ -37,7 +37,13 @@ public class Budget {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private BudgetStatus state; // PENDENTE | ACEITE | REJEITADO
+    private BudgetStatus state;
+
+    @Column(name = "pdf_url")
+    private String pdfUrl; // URL do PDF gerado e guardado no R2
+
+    @Column(name = "pdf_generated_at")
+    private LocalDateTime pdfGeneratedAt;
 
     private LocalDateTime insertedAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();
@@ -45,6 +51,17 @@ public class Budget {
 
     @OneToMany(mappedBy = "budget", cascade = CascadeType.ALL)
     private List<ItemBudget> itens;
+
+    @PrePersist
+    public void prePersist() {
+        insertedAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
     public enum BudgetStatus {
         PENDENTE, ACEITE, REJEITADO
