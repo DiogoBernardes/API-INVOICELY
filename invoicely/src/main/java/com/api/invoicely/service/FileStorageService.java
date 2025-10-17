@@ -16,7 +16,6 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +40,7 @@ public class FileStorageService {
     public String upload(MultipartFile file, String folder) {
         if (file == null || file.isEmpty()) return null;
 
-        String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        String filename = file.getOriginalFilename();
         String key = r2Properties.getEnvironmentFolder() + "/" + folder + "/" + filename;
 
         try {
@@ -57,7 +56,8 @@ public class FileStorageService {
             throw new ApiException("Erro ao fazer upload do arquivo", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        // URL pública do arquivo (pode ser privada se necessário)
-        return r2Properties.getEndpoint() + "/" + r2Properties.getBucket() + "/" + key;
+
+        String readableFilename = "budget_" + file.getOriginalFilename();
+        return r2Properties.getEndpoint() + "/" + r2Properties.getBucket() + "/" + key + "?filename=" + readableFilename;
     }
 }
