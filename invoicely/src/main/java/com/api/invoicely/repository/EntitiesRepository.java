@@ -25,4 +25,8 @@ public interface EntitiesRepository extends JpaRepository<Entities, UUID> {
 
     // Todas as entidades (ativas e removidas)
     List<Entities> findByCompany(Company company);
+
+    Boolean existsByNif(String nif);
+    Boolean existsByEmail(String email);
+
 }

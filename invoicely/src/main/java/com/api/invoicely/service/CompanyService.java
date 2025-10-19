@@ -8,6 +8,8 @@ import com.api.invoicely.entity.User;
 import com.api.invoicely.exceptions.ApiException;
 import com.api.invoicely.mapper.CompanyMapper;
 import com.api.invoicely.repository.CompanyRepository;
+import com.api.invoicely.repository.EntitiesRepository;
+import com.api.invoicely.utils.ValidationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import java.io.IOException;
 public class CompanyService {
 
     private final CompanyRepository companyRepository;
+    private final EntitiesRepository entitiesRepository;
 
     public CompanyResponseDTO findCompanyByOwner(User owner) {
         return companyRepository.findByOwner(owner)
@@ -29,6 +32,23 @@ public class CompanyService {
     public CompanyResponseDTO createCompany(User owner, CompanyCreateDTO dto)  {
         if (companyRepository.findByOwner(owner).isPresent()) {
             throw new ApiException("O utilizador já possui uma empresa.", HttpStatus.BAD_REQUEST);
+        }
+
+
+        if (!ValidationUtils.isValidPortugueseNif(dto.getNif())) {
+            throw new ApiException("O NIF inserido é inválido.", HttpStatus.BAD_REQUEST);
+        }
+
+        if (!ValidationUtils.isValidEmail(dto.getEmail())) {
+            throw new ApiException("O email inserido é inválido.", HttpStatus.BAD_REQUEST);
+        }
+
+        if (entitiesRepository.existsByNif(dto.getNif()) || companyRepository.existsByNif(dto.getNif())) {
+            throw new ApiException("Já existe um registo com este NIF.", HttpStatus.BAD_REQUEST);
+        }
+
+        if (entitiesRepository.existsByEmail(dto.getEmail()) || companyRepository.existsByEmail(dto.getEmail())) {
+            throw new ApiException("Já existe um registo com este email.", HttpStatus.BAD_REQUEST);
         }
 
         try {
@@ -55,6 +75,15 @@ public class CompanyService {
     public CompanyResponseDTO updateCompany(User owner, CompanyUpdateDTO dto) {
         Company company = companyRepository.findByOwner(owner)
                 .orElseThrow(() -> new ApiException("Empresa não encontrada.", HttpStatus.NOT_FOUND));
+
+        if (!ValidationUtils.isValidEmail(dto.getEmail())) {
+            throw new ApiException("O email inserido é inválido.", HttpStatus.BAD_REQUEST);
+        }
+
+        if (entitiesRepository.existsByEmail(dto.getEmail()) || companyRepository.existsByEmail(dto.getEmail())) {
+            throw new ApiException("Já existe um registo com este email.", HttpStatus.BAD_REQUEST);
+        }
+
         try {
             if (dto.getEmail() != null) company.setEmail(dto.getEmail());
             if (dto.getPhone() != null) company.setPhone(dto.getPhone());
