@@ -31,9 +31,17 @@ public class Company {
     @Column(nullable = false)
     private String address;
 
-    @Lob private byte[] logo;
-    @Lob private byte[] signature;
-    @Lob private byte[] stamp;
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] logo;
+
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] signature;
+
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] stamp;
 
     private LocalDateTime insertedAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();

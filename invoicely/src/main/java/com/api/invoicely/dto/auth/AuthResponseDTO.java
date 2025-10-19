@@ -1,4 +1,4 @@
-package com.api.invoicely.responses;
+package com.api.invoicely.dto.auth;
 
 
 import lombok.AllArgsConstructor;
@@ -6,6 +6,6 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class AuthResponse {
+public class AuthResponseDTO {
     private String token;
 }

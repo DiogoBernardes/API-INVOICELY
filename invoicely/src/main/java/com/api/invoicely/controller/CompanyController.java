@@ -31,8 +31,8 @@ public class CompanyController {
         return ResponseEntity.ok(companyService.createCompany(owner, dto));
     }
 
-    @PutMapping("/update/{companyId}")
-    public ResponseEntity<CompanyResponseDTO> updateCompany(@AuthenticationPrincipal User owner, @RequestBody CompanyUpdateDTO dto,
+    @PutMapping(value = "/update/{companyId}", consumes = "multipart/form-data")
+    public ResponseEntity<CompanyResponseDTO> updateCompany(@AuthenticationPrincipal User owner, @ModelAttribute CompanyUpdateDTO dto,
                                                             @PathVariable String companyId) {
         return ResponseEntity.ok(companyService.updateCompany(owner, dto));
     }

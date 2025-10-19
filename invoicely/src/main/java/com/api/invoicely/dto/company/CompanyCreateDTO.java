@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @NoArgsConstructor
@@ -15,7 +16,7 @@ public class CompanyCreateDTO {
     private String email;
     private String phone;
     private String address;
-    private byte[] logo;
-    private byte[] signature;
-    private byte[] stamp;
+    private MultipartFile logo;
+    private MultipartFile signature;
+    private MultipartFile stamp;
 }

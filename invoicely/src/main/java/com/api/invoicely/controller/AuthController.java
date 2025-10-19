@@ -2,7 +2,6 @@ package com.api.invoicely.controller;
 
 import com.api.invoicely.dto.auth.*;
 import com.api.invoicely.entity.User;
-import com.api.invoicely.responses.*;
 import com.api.invoicely.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +18,12 @@ public class AuthController {
 
     @PostMapping("/register")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<RegisterResponse> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<RegisterResponseDTO> register(@RequestBody RegisterRequest request) {
         return ResponseEntity.ok(authService.register(request));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
+    public ResponseEntity<AuthResponseDTO> login(@RequestBody AuthRequest request) {
         return ResponseEntity.ok(authService.login(request));
     }
 

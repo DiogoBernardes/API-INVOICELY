@@ -1,4 +1,4 @@
-package com.api.invoicely.responses;
+package com.api.invoicely.dto.auth;
 
 import com.api.invoicely.entity.Company;
 import lombok.*;
@@ -9,7 +9,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RegisterResponse {
+public class RegisterResponseDTO {
 
     private UUID id;
     private String email;
@@ -19,8 +19,8 @@ public class RegisterResponse {
     private Company company;
 
 
-    public static RegisterResponse fromUser(com.api.invoicely.entity.User user) {
-        return RegisterResponse.builder()
+    public static RegisterResponseDTO fromUser(com.api.invoicely.entity.User user) {
+        return RegisterResponseDTO.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .username(user.getUsername())

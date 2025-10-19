@@ -8,15 +8,20 @@ import com.api.invoicely.entity.User;
 import com.api.invoicely.exceptions.ApiException;
 import com.api.invoicely.mapper.CompanyMapper;
 import com.api.invoicely.repository.CompanyRepository;
+import com.api.invoicely.repository.EntitiesRepository;
+import com.api.invoicely.utils.ValidationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
 public class CompanyService {
 
     private final CompanyRepository companyRepository;
+    private final EntitiesRepository entitiesRepository;
 
     public CompanyResponseDTO findCompanyByOwner(User owner) {
         return companyRepository.findByOwner(owner)
@@ -24,39 +29,73 @@ public class CompanyService {
                 .orElse(null);
     }
 
-    public CompanyResponseDTO createCompany(User owner, CompanyCreateDTO dto) {
+    public CompanyResponseDTO createCompany(User owner, CompanyCreateDTO dto)  {
         if (companyRepository.findByOwner(owner).isPresent()) {
             throw new ApiException("O utilizador já possui uma empresa.", HttpStatus.BAD_REQUEST);
         }
 
-        Company company = Company.builder()
-                .name(dto.getName())
-                .nif(dto.getNif())
-                .email(dto.getEmail())
-                .phone(dto.getPhone())
-                .address(dto.getAddress())
-                .logo(dto.getLogo())
-                .signature(dto.getSignature())
-                .stamp(dto.getStamp())
-                .owner(owner)
-                .build();
 
-        companyRepository.save(company);
-        return CompanyMapper.toCompanyDTO(company);
+        if (!ValidationUtils.isValidPortugueseNif(dto.getNif())) {
+            throw new ApiException("O NIF inserido é inválido.", HttpStatus.BAD_REQUEST);
+        }
+
+        if (!ValidationUtils.isValidEmail(dto.getEmail())) {
+            throw new ApiException("O email inserido é inválido.", HttpStatus.BAD_REQUEST);
+        }
+
+        if (entitiesRepository.existsByNif(dto.getNif()) || companyRepository.existsByNif(dto.getNif())) {
+            throw new ApiException("Já existe um registo com este NIF.", HttpStatus.BAD_REQUEST);
+        }
+
+        if (entitiesRepository.existsByEmail(dto.getEmail()) || companyRepository.existsByEmail(dto.getEmail())) {
+            throw new ApiException("Já existe um registo com este email.", HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            Company company = Company.builder()
+                    .name(dto.getName())
+                    .nif(dto.getNif())
+                    .email(dto.getEmail())
+                    .phone(dto.getPhone())
+                    .address(dto.getAddress())
+                    .logo(dto.getLogo() != null ? dto.getLogo().getBytes() : null)
+                    .signature(dto.getSignature() != null ? dto.getSignature().getBytes() : null)
+                    .stamp(dto.getStamp() != null ? dto.getStamp().getBytes() : null)
+                    .owner(owner)
+                    .build();
+
+            companyRepository.save(company);
+            return CompanyMapper.toCompanyDTO(company);
+
+        } catch (IOException e) {
+            throw new ApiException("Erro ao processar imagens da empresa.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     public CompanyResponseDTO updateCompany(User owner, CompanyUpdateDTO dto) {
         Company company = companyRepository.findByOwner(owner)
                 .orElseThrow(() -> new ApiException("Empresa não encontrada.", HttpStatus.NOT_FOUND));
 
-        if (dto.getEmail() != null) company.setEmail(dto.getEmail());
-        if (dto.getPhone() != null) company.setPhone(dto.getPhone());
-        if (dto.getAddress() != null) company.setAddress(dto.getAddress());
-        if (dto.getLogo() != null) company.setLogo(dto.getLogo());
-        if (dto.getSignature() != null) company.setSignature(dto.getSignature());
-        if (dto.getStamp() != null) company.setStamp(dto.getStamp());
+        if (!ValidationUtils.isValidEmail(dto.getEmail())) {
+            throw new ApiException("O email inserido é inválido.", HttpStatus.BAD_REQUEST);
+        }
 
-        companyRepository.save(company);
-        return CompanyMapper.toCompanyDTO(company);
+        if (entitiesRepository.existsByEmail(dto.getEmail()) || companyRepository.existsByEmail(dto.getEmail())) {
+            throw new ApiException("Já existe um registo com este email.", HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            if (dto.getEmail() != null) company.setEmail(dto.getEmail());
+            if (dto.getPhone() != null) company.setPhone(dto.getPhone());
+            if (dto.getAddress() != null) company.setAddress(dto.getAddress());
+            if (dto.getLogo() != null) company.setLogo(dto.getLogo().getBytes());
+            if (dto.getSignature() != null) company.setSignature(dto.getSignature().getBytes());
+            if (dto.getStamp() != null) company.setStamp(dto.getStamp().getBytes());
+
+            companyRepository.save(company);
+            return CompanyMapper.toCompanyDTO(company);
+        } catch (IOException e) {
+            throw new ApiException("Erro ao processar imagens da empresa.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
