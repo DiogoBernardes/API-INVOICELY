@@ -6,8 +6,8 @@ import com.api.invoicely.dto.auth.ChangePasswordRequest;
 import com.api.invoicely.entity.User;
 import com.api.invoicely.exceptions.ApiException;
 import com.api.invoicely.repository.UserRepository;
-import com.api.invoicely.responses.AuthResponse;
-import com.api.invoicely.responses.RegisterResponse;
+import com.api.invoicely.dto.auth.AuthResponseDTO;
+import com.api.invoicely.dto.auth.RegisterResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,7 +27,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public RegisterResponse register(RegisterRequest request) {
+    public RegisterResponseDTO register(RegisterRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new ApiException("Email existente. Por favor insira outro email!", HttpStatus.BAD_REQUEST);
         }
@@ -43,10 +43,10 @@ public class AuthService {
 
         userRepository.save(newUser);
 
-        return RegisterResponse.fromUser(newUser);
+        return RegisterResponseDTO.fromUser(newUser);
     }
 
-    public AuthResponse login(AuthRequest request) {
+    public AuthResponseDTO login(AuthRequest request) {
         try {
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
@@ -54,7 +54,7 @@ public class AuthService {
 
             User user = (User) auth.getPrincipal();
             String token = jwtService.generateToken(user);
-            return new AuthResponse(token);
+            return new AuthResponseDTO(token);
 
         } catch (DisabledException ex) {
             throw new ApiException("Conta desativada. Por favor contacte um administrador.", HttpStatus.FORBIDDEN);

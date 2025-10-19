@@ -4,8 +4,8 @@ import com.api.invoicely.dto.auth.*;
 import com.api.invoicely.entity.User;
 import com.api.invoicely.exceptions.ApiException;
 import com.api.invoicely.repository.UserRepository;
-import com.api.invoicely.responses.AuthResponse;
-import com.api.invoicely.responses.RegisterResponse;
+import com.api.invoicely.dto.auth.AuthResponseDTO;
+import com.api.invoicely.dto.auth.RegisterResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -55,7 +55,7 @@ class AuthServiceTest {
         when(passwordEncoder.encode(request.getPassword())).thenReturn("encodedPassword");
         when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        RegisterResponse response = authService.register(request);
+        RegisterResponseDTO response = authService.register(request);
 
         assertEquals("test@example.com", response.getEmail());
         assertEquals("TestUser", response.getUsername());
@@ -90,7 +90,7 @@ class AuthServiceTest {
         when(authenticationManager.authenticate(any())).thenReturn(auth);
         when(jwtService.generateToken(user)).thenReturn("jwt-token");
 
-        AuthResponse response = authService.login(request);
+        AuthResponseDTO response = authService.login(request);
         assertEquals("jwt-token", response.getToken());
     }
 
