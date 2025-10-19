@@ -3,6 +3,7 @@ package com.api.invoicely.mapper;
 import com.api.invoicely.dto.company.CompanyResponseDTO;
 import com.api.invoicely.entity.Company;
 import org.springframework.stereotype.Component;
+import java.util.Base64;
 
 import static com.api.invoicely.mapper.OwnerMapper.toOwnerDTO;
 
@@ -19,9 +20,9 @@ public class CompanyMapper {
                 .email(company.getEmail())
                 .phone(company.getPhone())
                 .address(company.getAddress())
-                .logo(company.getLogo())
-                .signature(company.getSignature())
-                .stamp(company.getStamp())
+                .logo(company.getLogo() != null ? Base64.getEncoder().encodeToString(company.getLogo()).getBytes() : null)
+                .signature(company.getSignature() != null ? Base64.getEncoder().encodeToString(company.getSignature()).getBytes() : null)
+                .stamp(company.getStamp() != null ? Base64.getEncoder().encodeToString(company.getStamp()).getBytes() : null)
                 .owner(toOwnerDTO(company.getOwner()))
                 .build();
     }

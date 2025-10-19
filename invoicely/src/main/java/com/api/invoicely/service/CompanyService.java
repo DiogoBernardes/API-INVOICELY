@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+
 @Service
 @RequiredArgsConstructor
 public class CompanyService {
@@ -24,39 +26,47 @@ public class CompanyService {
                 .orElse(null);
     }
 
-    public CompanyResponseDTO createCompany(User owner, CompanyCreateDTO dto) {
+    public CompanyResponseDTO createCompany(User owner, CompanyCreateDTO dto)  {
         if (companyRepository.findByOwner(owner).isPresent()) {
             throw new ApiException("O utilizador já possui uma empresa.", HttpStatus.BAD_REQUEST);
         }
 
-        Company company = Company.builder()
-                .name(dto.getName())
-                .nif(dto.getNif())
-                .email(dto.getEmail())
-                .phone(dto.getPhone())
-                .address(dto.getAddress())
-                .logo(dto.getLogo())
-                .signature(dto.getSignature())
-                .stamp(dto.getStamp())
-                .owner(owner)
-                .build();
+        try {
+            Company company = Company.builder()
+                    .name(dto.getName())
+                    .nif(dto.getNif())
+                    .email(dto.getEmail())
+                    .phone(dto.getPhone())
+                    .address(dto.getAddress())
+                    .logo(dto.getLogo() != null ? dto.getLogo().getBytes() : null)
+                    .signature(dto.getSignature() != null ? dto.getSignature().getBytes() : null)
+                    .stamp(dto.getStamp() != null ? dto.getStamp().getBytes() : null)
+                    .owner(owner)
+                    .build();
 
-        companyRepository.save(company);
-        return CompanyMapper.toCompanyDTO(company);
+            companyRepository.save(company);
+            return CompanyMapper.toCompanyDTO(company);
+
+        } catch (IOException e) {
+            throw new ApiException("Erro ao processar imagens da empresa.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     public CompanyResponseDTO updateCompany(User owner, CompanyUpdateDTO dto) {
         Company company = companyRepository.findByOwner(owner)
                 .orElseThrow(() -> new ApiException("Empresa não encontrada.", HttpStatus.NOT_FOUND));
+        try {
+            if (dto.getEmail() != null) company.setEmail(dto.getEmail());
+            if (dto.getPhone() != null) company.setPhone(dto.getPhone());
+            if (dto.getAddress() != null) company.setAddress(dto.getAddress());
+            if (dto.getLogo() != null) company.setLogo(dto.getLogo().getBytes());
+            if (dto.getSignature() != null) company.setSignature(dto.getSignature().getBytes());
+            if (dto.getStamp() != null) company.setStamp(dto.getStamp().getBytes());
 
-        if (dto.getEmail() != null) company.setEmail(dto.getEmail());
-        if (dto.getPhone() != null) company.setPhone(dto.getPhone());
-        if (dto.getAddress() != null) company.setAddress(dto.getAddress());
-        if (dto.getLogo() != null) company.setLogo(dto.getLogo());
-        if (dto.getSignature() != null) company.setSignature(dto.getSignature());
-        if (dto.getStamp() != null) company.setStamp(dto.getStamp());
-
-        companyRepository.save(company);
-        return CompanyMapper.toCompanyDTO(company);
+            companyRepository.save(company);
+            return CompanyMapper.toCompanyDTO(company);
+        } catch (IOException e) {
+            throw new ApiException("Erro ao processar imagens da empresa.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

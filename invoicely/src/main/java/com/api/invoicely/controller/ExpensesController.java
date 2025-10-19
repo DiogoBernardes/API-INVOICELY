@@ -31,7 +31,7 @@ public class ExpensesController {
     }
 
     @PostMapping(value = "/create", consumes = "multipart/form-data")
-    public ResponseEntity<ExpensesResponseDTO> createExpense(@AuthenticationPrincipal User owner, @RequestBody ExpensesCreateDTO dto){
+    public ResponseEntity<ExpensesResponseDTO> createExpense(@AuthenticationPrincipal User owner, @ModelAttribute ExpensesCreateDTO dto){
         return ResponseEntity.ok(expensesService.createExpense(owner, dto));
     }
 
