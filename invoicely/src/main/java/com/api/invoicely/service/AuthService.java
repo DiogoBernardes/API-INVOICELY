@@ -37,6 +37,7 @@ public class AuthService {
         User newUser = User.builder()
                 .email(request.getEmail())
                 .username(request.getUsername())
+                .active(true)
                 .password(passwordEncoder.encode(request.getPassword()))
                 .isAdmin(false)
                 .build();
