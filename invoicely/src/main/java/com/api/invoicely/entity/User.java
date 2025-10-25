@@ -33,6 +33,7 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
+
     private boolean active = true;
     private boolean isAdmin = false;
 
