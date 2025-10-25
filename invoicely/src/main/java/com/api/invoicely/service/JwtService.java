@@ -1,8 +1,7 @@
 package com.api.invoicely.service;
 
 import com.api.invoicely.entity.User;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -12,45 +11,69 @@ import java.util.Date;
 
 @Service
 public class JwtService {
+
     @Value("${jwt.secret}")
     private String secret;
-
-    @Value("${jwt.expiration}")
-    private long expiration;
 
     private Key getSignKey() {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
-    public String generateToken(User user) {
+
+    /**
+     * Gera token com duração customizada
+     */
+    public String generateToken(User user, long durationMillis) {
         return Jwts.builder()
                 .setSubject(user.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .setExpiration(new Date(System.currentTimeMillis() + durationMillis))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
+    /**
+     * Extrai email do token
+     */
     public String extractUsername(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSignKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(getSignKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getSubject();
+        } catch (JwtException e) {
+            return null; // token inválido
+        }
     }
 
-    public boolean isTokenValid(String token, String userEmail) {
-        final String username = extractUsername(token);
-        return username.equals(userEmail) && !isTokenExpired(token);
+    /**
+     * Valida token contra email do utilizador
+     */
+    public boolean isTokenValid(String token) {
+        try {
+            final String username = extractUsername(token);
+            return username != null && !isTokenExpired(token);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
+
+    /**
+     * Verifica se token expirou
+     */
     private boolean isTokenExpired(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSignKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getExpiration()
-                .before(new Date());
+        try {
+            Date expiration = Jwts.parserBuilder()
+                    .setSigningKey(getSignKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getExpiration();
+            return expiration.before(new Date());
+        } catch (JwtException e) {
+            return true;
+        }
     }
 }

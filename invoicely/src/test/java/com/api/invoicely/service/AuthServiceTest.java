@@ -84,15 +84,21 @@ class AuthServiceTest {
         request.setPassword("password");
 
         User user = mock(User.class);
+        when(user.getEmail()).thenReturn("user@test.com");
+
         Authentication auth = mock(Authentication.class);
         when(auth.getPrincipal()).thenReturn(user);
 
         when(authenticationManager.authenticate(any())).thenReturn(auth);
-        when(jwtService.generateToken(user)).thenReturn("jwt-token");
+        when(jwtService.generateToken(user, 15 * 60 * 1000)).thenReturn("access-token");
+        when(jwtService.generateToken(user, 7 * 24 * 60 * 60 * 1000)).thenReturn("refresh-token");
 
-        AuthResponseDTO response = authService.login(request);
-        assertEquals("jwt-token", response.getToken());
+        AuthResponseDTO response = authService.authenticate(request);
+
+        assertEquals("access-token", response.getAccessToken());
+        assertEquals("refresh-token", response.getRefreshToken());
     }
+
 
     @Test
     void login_disabledAccount_throwsException() {
